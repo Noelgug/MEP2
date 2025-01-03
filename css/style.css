@@ -1,0 +1,42 @@
+body {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+    padding: 0;
+}
+
+nav {
+    margin-bottom: 20px;
+}
+
+.w3-container {
+    margin-bottom: 20px;
+    background-color: white;
+}
+
+section {
+    margin: 20px 0;
+}
+
+#inputForm {
+    padding: 20px;
+}
+
+.w3-input {
+    margin-bottom: 10px;
+}
+
+#outputArea {
+    min-height: 100px;
+    background-color: #f9f9f9;
+}
+
+img.w3-image {
+    max-width: 600px;
+    margin: 20px 0;
+}
+
+.w3-button {
+    cursor: pointer;
+}

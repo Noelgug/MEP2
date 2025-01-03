@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Technologies Project</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+    <nav class="w3-bar w3-black">
+        <a href="#information" class="w3-bar-item w3-button">Information</a>
+        <a href="#input" class="w3-bar-item w3-button">Input</a>
+        <a href="#output" class="w3-bar-item w3-button">Output</a>
+    </nav>
+
+    <section id="information" class="w3-container w3-padding-32">
+        <h1>Application Information</h1>
+        <p>This application allows users to send data to the backend and view the processed results.</p>
+        <img src="../img/example.png" alt="Example Image" class="w3-image">
+    </section>
+
+    <section id="input" class="w3-container w3-padding-32">
+        <h1>Input Data</h1>
+        <form id="inputForm" class="w3-container w3-card-4">
+            <div class="w3-margin-bottom">
+                <label for="field1">Name:</label>
+                <input type="text" id="field1" name="field1" class="w3-input" required>
+            </div>
+            
+            <div class="w3-margin-bottom">
+                <label for="field2">Age:</label>
+                <input type="number" id="field2" name="field2" class="w3-input" required>
+            </div>
+            
+            <div class="w3-margin-bottom">
+                <label for="field3">Birth date:</label>
+                <input type="date" id="field3" name="field3" class="w3-input" required>
+            </div>
+
+            <button type="submit" class="w3-button w3-green w3-margin-bottom">Send</button>
+        </form>
+    </section>
+
+    <section id="output" class="w3-container w3-padding-32">
+        <h1>Output</h1>
+        <div id="outputArea" class="w3-card w3-padding"></div>
+    </section>
+
+    <script src="../js/script.js" defer></script>
+</body>
+</html>
