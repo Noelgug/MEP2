@@ -58,21 +58,12 @@ try {
     }
 
     // Sanitize data
-    $name = filter_var($data['name'], FILTER_SANITIZE_STRING);
-    $age = filter_var($data['age'], FILTER_SANITIZE_NUMBER_INT);
+    $name = htmlspecialchars($data['name'], ENT_QUOTES, 'UTF-8');
+    $age = (int)$data['age'];
     $appointment_date = date('Y-m-d', strtotime($data['appointment_date']));
 
-    // Set cookie with proper configuration
-    $cookieOptions = [
-        'expires' => time() + 3600, // 1 hour
-        'path' => '/',
-        'domain' => '',
-        'secure' => true,
-        'httponly' => false, // Allow JavaScript access
-        'samesite' => 'Strict'
-    ];
-
-    setcookie('child_name', $name, $cookieOptions);
+    // Set basic cookie without complex options
+    setcookie('child_name', $name, time() + 3600, '/');
 
     // Store in database
     $stmt = $pdo->prepare("
@@ -82,15 +73,11 @@ try {
     
     $stmt->execute([$name, $age, $appointment_date]);
 
-    // Create response with cookie information
     $response = [
         'status' => 'success',
-        'message' => isset($_COOKIE['child_name']) 
-            ? "Welcome back, {$name}'s parents!" 
-            : "Registration successful! Welcome, {$name}'s parents!",
+        'message' => "Registration successful! Welcome, {$name}'s parents!",
         'user' => [
             'name' => $name,
-            'isReturning' => isset($_COOKIE['child_name']),
             'cookieSet' => true
         ]
     ];

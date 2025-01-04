@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (childName) {
             try {
                 welcomeDiv.innerHTML = `
-                    <div class="w3-panel w3-pale-blue">
+                    <div class="w3-panel">
                         <h3>Welcome back, ${childName}'s parents!</h3>
                     </div>`;
                 welcomeDiv.style.display = 'block';
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             welcomeDiv.innerHTML = `
-                <div class="w3-panel w3-pale-blue">
+                <div class="w3-panel">
                     <h3>Welcome to our Childcare Center!</h3>
                 </div>`;
             welcomeDiv.style.display = 'block';
@@ -68,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let cookie of cookies) {
             const [cookieName, cookieValue] = cookie.split('=').map(c => c.trim());
             if (cookieName === name) {
-                return cookieValue;
+                // Decode the cookie value
+                return decodeURIComponent(cookieValue);
             }
         }
         return null;
