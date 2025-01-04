@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(form);
 
         try {
-            const response = await fetch('../backend/backend.php', {
+            const response = await fetch('backend.php', {
                 method: 'POST',
                 body: formData,
                 headers: {
