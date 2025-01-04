@@ -36,6 +36,47 @@ document.addEventListener('DOMContentLoaded', () => {
         return errors;
     }
 
+    // Add welcome message display
+    function checkForReturningUser() {
+        const childName = getCookie('child_name');
+        const welcomeDiv = document.getElementById('welcomeMessage');
+        
+        if (!welcomeDiv) return;
+
+        if (childName) {
+            try {
+                welcomeDiv.innerHTML = `
+                    <div class="w3-panel w3-pale-blue">
+                        <h3>Welcome back, ${childName}'s parents!</h3>
+                    </div>`;
+                welcomeDiv.style.display = 'block';
+            } catch (error) {
+                console.error('Error displaying welcome message:', error);
+                welcomeDiv.style.display = 'none';
+            }
+        } else {
+            welcomeDiv.innerHTML = `
+                <div class="w3-panel w3-pale-blue">
+                    <h3>Welcome to our Childcare Center!</h3>
+                </div>`;
+            welcomeDiv.style.display = 'block';
+        }
+    }
+
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.split('=').map(c => c.trim());
+            if (cookieName === name) {
+                return cookieValue;
+            }
+        }
+        return null;
+    }
+
+    // Call on page load
+    checkForReturningUser();
+
     registrationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -61,6 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             
+            if (data.status === 'success') {
+                // Force cookie check after successful registration
+                setTimeout(checkForReturningUser, 100);
+            }
+            
             // Create formatted date
             const appointmentDate = new Date(document.getElementById('appointment_date').value)
                 .toLocaleDateString('en-GB', { 
@@ -78,6 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     has been registered for <strong>${appointmentDate}</strong>. For changes 
                     please call us at +41 12 345 67 89 or send an email to info@kinderhord.ch</p>
                 </div>`;
+            
+            // Update welcome message after successful registration
+            checkForReturningUser();
             
             // Copy age value to cost calculation form
             const age = document.getElementById('age').value;

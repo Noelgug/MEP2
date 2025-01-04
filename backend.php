@@ -62,8 +62,17 @@ try {
     $age = filter_var($data['age'], FILTER_SANITIZE_NUMBER_INT);
     $appointment_date = date('Y-m-d', strtotime($data['appointment_date']));
 
-    // Set cookie
-    setcookie('username', $name, time() + 3600, '/');
+    // Set cookie with proper configuration
+    $cookieOptions = [
+        'expires' => time() + 3600, // 1 hour
+        'path' => '/',
+        'domain' => '',
+        'secure' => true,
+        'httponly' => false, // Allow JavaScript access
+        'samesite' => 'Strict'
+    ];
+
+    setcookie('child_name', $name, $cookieOptions);
 
     // Store in database
     $stmt = $pdo->prepare("
@@ -73,14 +82,20 @@ try {
     
     $stmt->execute([$name, $age, $appointment_date]);
 
-    // Success response
-    echo json_encode([
-        'message' => "Registration successful! Welcome, $name!",
+    // Create response with cookie information
+    $response = [
+        'status' => 'success',
+        'message' => isset($_COOKIE['child_name']) 
+            ? "Welcome back, {$name}'s parents!" 
+            : "Registration successful! Welcome, {$name}'s parents!",
         'user' => [
             'name' => $name,
-            'cookie' => $_COOKIE['username'] ?? null
+            'isReturning' => isset($_COOKIE['child_name']),
+            'cookieSet' => true
         ]
-    ]);
+    ];
+
+    echo json_encode($response);
 
 } catch (PDOException $e) {
     http_response_code(500);
