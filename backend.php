@@ -23,9 +23,16 @@ function validateInput($data) {
         $errors[] = "Age must be between 0 and 12 years";
     }
     
-    // Validate birth date
-    if (!isset($data['birth_date']) || !strtotime($data['birth_date'])) {
-        $errors[] = "Please provide a valid birth date";
+    // Validate appointment date
+    if (!isset($data['appointment_date']) || !strtotime($data['appointment_date'])) {
+        $errors[] = "Please provide a valid appointment date";
+    } else {
+        $appointmentDate = new DateTime($data['appointment_date']);
+        $today = new DateTime('today');
+        
+        if ($appointmentDate < $today) {
+            $errors[] = "Appointment date cannot be in the past";
+        }
     }
     
     return $errors;
@@ -53,18 +60,18 @@ try {
     // Sanitize data
     $name = filter_var($data['name'], FILTER_SANITIZE_STRING);
     $age = filter_var($data['age'], FILTER_SANITIZE_NUMBER_INT);
-    $birth_date = date('Y-m-d', strtotime($data['birth_date']));
+    $appointment_date = date('Y-m-d', strtotime($data['appointment_date']));
 
     // Set cookie
     setcookie('username', $name, time() + 3600, '/');
 
     // Store in database
     $stmt = $pdo->prepare("
-        INSERT INTO children (name, age, birth_date, registration_date) 
+        INSERT INTO children (name, age, appointment_date, registration_date) 
         VALUES (?, ?, ?, NOW())
     ");
     
-    $stmt->execute([$name, $age, $birth_date]);
+    $stmt->execute([$name, $age, $appointment_date]);
 
     // Success response
     echo json_encode([

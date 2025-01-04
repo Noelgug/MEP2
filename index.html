@@ -11,12 +11,15 @@
     <nav class="w3-bar">
         <a href="#registration" class="w3-bar-item w3-button">Registration</a>
         <a href="#cost" class="w3-bar-item w3-button">Cost Calculation</a>
-        <a href="#canvas" class="w3-bar-item w3-button">Canvas</a>
+        <a href="#canvas" class="w3-bar-item w3-button">Weather</a>
     </nav>
 
     <section id="registration" class="w3-container w3-padding-32">
         <h1>Register a Child</h1>
-        <p>This application allows users to send data to the backend and view the processed results.</p>
+        <p>
+            To register for a daycare spot, please provide the child's name, age, and the date they are scheduled to attend daycare. 
+            The maximum age for the child is 12 years.
+        </p>
         <img src="img/day-care-center-7355023_1920.jpg" alt="Example Image" class="w3-image">
     </section>
 
@@ -32,8 +35,8 @@
                 <input type="number" id="age" name="age" class="w3-input" min="0" max="12" required>
             </div>
             <div class="w3-margin-bottom">
-                <label for="birth_date">Birth Date:</label>
-                <input type="date" id="birth_date" name="birth_date" class="w3-input" required>
+                <label for="appointment_date">Date:</label>
+                <input type="date" id="appointment_date" name="appointment_date" class="w3-input" required>
             </div>
             <button type="submit" class="w3-button w3-green">Register</button>
         </form>

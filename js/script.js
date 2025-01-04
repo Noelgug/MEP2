@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function validateForm() {
         const name = document.getElementById('name').value.trim();
         const age = parseInt(document.getElementById('age').value);
-        const birthDate = document.getElementById('birth_date').value;
+        const appointmentDate = document.getElementById('appointment_date').value;
 
         const errors = [];
 
@@ -23,9 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
             errors.push('Age must be between 0 and 12 years');
         }
 
-        const date = new Date(birthDate);
-        if (!birthDate || isNaN(date.getTime())) {
-            errors.push('Please enter a valid birth date');
+        const date = new Date(appointmentDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+
+        if (!appointmentDate || isNaN(date.getTime())) {
+            errors.push('Please enter a valid date');
+        } else if (date < today) {
+            errors.push('Appointment date cannot be in the past');
         }
 
         return errors;
@@ -55,7 +60,29 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const data = await response.json();
-            registrationOutput.innerHTML = `<p class="w3-text-green">${data.message || 'Registration successful!'}</p>`;
+            
+            // Create formatted date
+            const appointmentDate = new Date(document.getElementById('appointment_date').value)
+                .toLocaleDateString('en-GB', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+
+            // Create detailed confirmation message
+            registrationOutput.innerHTML = `
+                <div class="w3-panel w3-pale-green w3-padding">
+                    <h3>Registration Successful!</h3>
+                    <p>Your child <strong>${document.getElementById('name').value}</strong>, 
+                    who is <strong>${document.getElementById('age').value}</strong> years old, 
+                    has been registered for <strong>${appointmentDate}</strong>. For changes 
+                    please call us at +41 12 345 67 89 or send an email to info@kinderhord.ch</p>
+                </div>`;
+            
+            // Copy age value to cost calculation form
+            const age = document.getElementById('age').value;
+            document.getElementById('child_age').value = age;
+            
         } catch (error) {
             registrationOutput.innerHTML = `<p class="w3-text-red">Error: ${error.message}</p>`;
         }
@@ -116,6 +143,36 @@ document.addEventListener('DOMContentLoaded', () => {
         // Label
         ctx.font = '24px Arial';
         ctx.fillText('Current Temperature in Zurich', weatherCanvas.width/2, weatherCanvas.height/2 - 50);
+
+        // Weather advice
+        ctx.font = '16px Arial';
+        let advice = '';
+        if (temp <= 15) {
+            advice = 'It is very cold at the moment. Don\'t forget to dress your child warmly.';
+        } else if (temp < 25) {
+            advice = 'The weather is mild at the moment. Dress your child comfortably, and consider bringing a light jacket just in case.';
+        } else {
+            advice = 'Make sure to dress your child appropriately for warm weather and apply sunscreen for protection.';
+        }
+
+        // Split advice text into multiple lines if too long
+        const maxWidth = weatherCanvas.width - 40;
+        let words = advice.split(' ');
+        let line = '';
+        let y = weatherCanvas.height/2 + 50;
+
+        words.forEach(word => {
+            let testLine = line + word + ' ';
+            let metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && line !== '') {
+                ctx.fillText(line, weatherCanvas.width/2, y);
+                line = word + ' ';
+                y += 25;
+            } else {
+                line = testLine;
+            }
+        });
+        ctx.fillText(line, weatherCanvas.width/2, y);
     }
 
     // Fetch and display weather data

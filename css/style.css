@@ -38,6 +38,31 @@ section {
 }
 
 img.w3-image {
-    max-width: 600px;
+    max-width: 100%;
+    height: auto;
     margin: 20px 0;
+    display: block;
+}
+
+/* Add media queries for responsive behavior */
+@media screen and (max-width: 768px) {
+    img.w3-image {
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+.w3-panel.w3-pale-green {
+    border-left: 6px solid #4CAF50;
+    margin-top: 16px;
+}
+
+.w3-panel.w3-pale-green h3 {
+    color: #4CAF50;
+    margin-top: 0;
+}
+
+.w3-panel.w3-pale-green p {
+    margin-bottom: 0;
+    line-height: 1.5;
 }
