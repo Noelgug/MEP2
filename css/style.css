@@ -8,6 +8,8 @@ body {
 
 nav {
     margin-bottom: 20px;
+    background-color: #F05A56;
+    color: white;
 }
 
 .w3-container {
@@ -19,7 +21,8 @@ section {
     margin: 20px 0;
 }
 
-#inputForm {
+#inputForm,
+#costForm {
     padding: 20px;
 }
 
@@ -27,7 +30,9 @@ section {
     margin-bottom: 10px;
 }
 
-#outputArea {
+#outputArea,
+#registrationOutput,
+#costOutput {
     min-height: 100px;
     background-color: #f9f9f9;
 }
@@ -35,8 +40,4 @@ section {
 img.w3-image {
     max-width: 600px;
     margin: 20px 0;
-}
-
-.w3-button {
-    cursor: pointer;
 }
