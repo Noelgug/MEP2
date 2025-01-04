@@ -120,66 +120,136 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=Zurich,CH&units=metric&appid=${API_KEY}`);
             const data = await response.json();
-            return data.main.temp;
+            return {
+                temp: data.main.temp,
+                cityName: data.name,
+                weather: data.weather[0].main
+            };
         } catch (error) {
             console.error('Weather API Error:', error);
             return null;
         }
     }
 
-    function drawTemperature(temp) {
+    function drawTemperature(weatherData) {
         ctx.clearRect(0, 0, weatherCanvas.width, weatherCanvas.height);
-        
-        // Background
+        const centerX = weatherCanvas.width / 2;
+        const centerY = weatherCanvas.height / 2;
+        const radius = Math.min(weatherCanvas.width, weatherCanvas.height) / 2.5;
+
+        // 1. Draw outer dodecagon
+        ctx.beginPath();
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * 2 * Math.PI) / 12;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
         ctx.fillStyle = '#5C56F0';
-        ctx.fillRect(0, 0, weatherCanvas.width, weatherCanvas.height);
+        ctx.fill();
 
-        // Temperature display
-        ctx.fillStyle = '#FFF';
-        ctx.font = '48px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(`${Math.round(temp)}°C`, weatherCanvas.width/2, weatherCanvas.height/2);
+        // 2. Draw inner circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius * 0.7, 0, 2 * Math.PI);
+        ctx.fillStyle = '#4347D9';
+        ctx.fill();
 
-        // Label
-        ctx.font = '24px Arial';
-        ctx.fillText('Current Temperature in Zurich', weatherCanvas.width/2, weatherCanvas.height/2 - 50);
-
-        // Weather advice
-        ctx.font = '16px Arial';
-        let advice = '';
-        if (temp <= 15) {
-            advice = 'It is very cold at the moment. Don\'t forget to dress your child warmly.';
-        } else if (temp < 25) {
-            advice = 'The weather is mild at the moment. Dress your child comfortably, and consider bringing a light jacket just in case.';
-        } else {
-            advice = 'Make sure to dress your child appropriately for warm weather and apply sunscreen for protection.';
+        // 3. Draw decorative arcs
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * 2 * Math.PI) / 12;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.85, angle, angle + Math.PI / 12);
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 2;
+            ctx.stroke();
         }
 
-        // Split advice text into multiple lines if too long
-        const maxWidth = weatherCanvas.width - 40;
-        let words = advice.split(' ');
-        let line = '';
-        let y = weatherCanvas.height/2 + 50;
+        // 4. Draw small circles at vertices
+        for (let i = 0; i < 12; i++) {
+            const angle = (i * 2 * Math.PI) / 12;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+        }
 
-        words.forEach(word => {
-            let testLine = line + word + ' ';
-            let metrics = ctx.measureText(testLine);
-            if (metrics.width > maxWidth && line !== '') {
-                ctx.fillText(line, weatherCanvas.width/2, y);
-                line = word + ' ';
-                y += 25;
+        // 5. Draw temperature display background
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius * 0.4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#3F41C7';
+        ctx.fill();
+
+        // 6. Draw connecting lines
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * 2 * Math.PI) / 6;
+            ctx.moveTo(centerX, centerY);
+            const x = centerX + radius * 0.6 * Math.cos(angle);
+            const y = centerY + radius * 0.6 * Math.sin(angle);
+            ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 7. Temperature display
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(weatherData.temp)}°C`, centerX, centerY + 15);
+
+        // 8. Draw title background
+        ctx.beginPath();
+        ctx.arc(centerX, centerY - radius * 0.5, radius * 0.3, Math.PI, 2 * Math.PI);
+        ctx.fillStyle = '#3F41C7';
+        ctx.fill();
+
+        // 9. Draw title with city name and weather condition
+        ctx.font = '20px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`${weatherData.cityName} - ${weatherData.weather}`, centerX, centerY - radius * 0.5);
+
+        // 10. Draw weather advice
+        let advice = '';
+        if (weatherData.temp <= 15) {
+            advice = 'It is very cold at the moment. Don\'t forget to dress your child warmly.';
+        } else if (weatherData.temp < 25) {
+            advice = 'The weather is mild. Dress your child comfortably and bring a light jacket.';
+        } else {
+            advice = 'Dress your child for warm weather and apply sunscreen.';
+        }
+
+        ctx.font = '16px Arial';
+        wrapText(ctx, advice, centerX, centerY + radius * 0.4, radius * 1.5, 25);
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = text.split(' ');
+        let line = '';
+
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && n > 0) {
+                ctx.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
             } else {
                 line = testLine;
             }
-        });
-        ctx.fillText(line, weatherCanvas.width/2, y);
+        }
+        ctx.fillText(line, x, y);
     }
 
     // Fetch and display weather data
     async function updateWeather() {
-        const temperature = await fetchWeatherData();
-        if (temperature !== null) {
-            drawTemperature(temperature);
+        const weatherData = await fetchWeatherData();
+        if (weatherData !== null) {
+            drawTemperature(weatherData);
         } else {
             ctx.fillStyle = '#333';
             ctx.font = '24px Arial';
